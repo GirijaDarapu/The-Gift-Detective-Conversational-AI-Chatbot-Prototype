@@ -1,0 +1,183 @@
+# The Gift Detective — Sekai Prompt Sequence
+# Author: Girija Darapu | AI Product Manager
+# Platform: Sekai (no-code AI mobile app builder)
+# Version: 1.2 | May 2026
+#
+# This file documents every prompt used to build The Gift Detective
+# from scratch on Sekai. Prompts are listed in build order.
+# ─────────────────────────────────────────────────────────────────
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 01 — CORE CHATBOT (Base System Prompt)
+═══════════════════════════════════════════════════════════════
+
+"Create an interactive chatbot called 'The Gift Detective' [1]. The
+chatbot is a witty, highly helpful gift curation agent [1]. Ask the user
+who they are shopping for and what that person loves doing. Conduct a
+brief 2-question interview on hobbies and interests [1]. After the user
+answers, output exactly 3 hyper-personalized, highly unique gift ideas
+formatted in clean, easy-to-read text cards with matching background
+emojis. Include a final screen that encourages them to share their
+results."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 02 — WELCOME / SPLASH SCREEN
+═══════════════════════════════════════════════════════════════
+
+"Design a welcoming splash screen for 'The Gift Detective' [1]. Display
+a large magnifying glass emoji centered on screen with the app name in
+bold beneath it [1]. Add a witty tagline that reads 'Every person. The
+perfect gift.' [1]. Include a single CTA button labeled 'Start
+Detecting' that transitions to the chat screen [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 03 — BUDGET FILTER SCREEN
+═══════════════════════════════════════════════════════════════
+
+"After the 2-question hobby interview, ask the user one final question:
+'What's your budget?' [1]. Display 4 tappable budget pill buttons:
+Under $25, $25–$50, $50–$100, and $100+ [1]. Style the selected pill
+with a bold highlight color [1]. Once selected, immediately transition
+to generating the 3 gift idea cards [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 04 — GIFT RESULTS / CARDS SCREEN
+═══════════════════════════════════════════════════════════════
+
+"Display exactly 3 gift idea cards in a vertically scrollable list [1].
+Each card has a large background emoji, a bold gift name, and a
+2-sentence description of why it's perfect for this person [1]. Add a
+subtle 'Why this gift?' expandable section beneath each card [1].
+Include a 'Find Another Idea' button at the bottom that regenerates one
+new card [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 05 — SHARE SCREEN
+═══════════════════════════════════════════════════════════════
+
+"After the 3 gift cards are shown, display a final full-screen share
+prompt [1]. Show a fun celebratory emoji at the top with the message
+'Your gift list is ready — don't keep it to yourself!' [1]. Include a
+bold 'Share Evidence' button and a smaller 'Start New Case' text link
+below it [1]. The share button should export a clean summary of the 3
+gift ideas as a message [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 06 — AMAZON BUY LINKS (Price-Tier Buttons)
+═══════════════════════════════════════════════════════════════
+
+"For each gift recommendation, display 3 tappable price-tier buttons
+labeled '💚 Under $30', '💛 $30–$75', and '🔴 $75+' [1]. Each button
+must open the following URLs in the device browser using a standard
+href link tag, not a JavaScript action [1]:
+
+- 💚 Under $30:  https://www.amazon.com/s?k=[gift+name]&rh=p_36%3A0-3000
+- 💛 $30–$75:    https://www.amazon.com/s?k=[gift+name]&rh=p_36%3A3000-7500
+- 🔴 $75+:       https://www.amazon.com/s?k=[gift+name]&rh=p_36%3A7500-
+
+Replace [gift+name] dynamically with the exact gift product keyword,
+using + instead of spaces (e.g. pickleball+paddle or coffee+mug) [1].
+Open each link using window.open(url, '_blank') to ensure it launches
+in the browser and redirects to the Amazon app if installed [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 07 — FIX: RESTORE 3 GIFT CARDS
+(Applied when results collapsed to 1 card)
+═══════════════════════════════════════════════════════════════
+
+"Ensure the results screen always displays exactly 3 separate gift idea
+cards, never fewer [1]. Each card must be generated as a distinct
+recommendation based on the user's answers, with a unique gift name,
+description, and emoji [1]. Do not collapse or merge the 3 cards into
+one [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 08 — FIX: FORCE WORKING LINKS (href override)
+(Applied when button taps did nothing)
+═══════════════════════════════════════════════════════════════
+
+"For each price tier button, render it as a plain HTML <a> tag with the
+Amazon URL set directly in the href attribute [1]. Do not use
+JavaScript, window.open, or onClick handlers to open the link [1]. The
+<a> tag must have target='_blank' and rel='noopener noreferrer'
+attributes [1]. The URL must be a fully formed Amazon search link with
+the gift name and price filter already embedded [1]. Replace the product
+name dynamically for each gift recommendation [1]."
+
+
+═══════════════════════════════════════════════════════════════
+PROMPT 09 — SPECIFIC AMAZON SEARCH TERMS
+═══════════════════════════════════════════════════════════════
+
+"When generating each gift recommendation, also generate a specific
+Amazon search keyword for that gift [1]. Use that keyword to populate
+the Amazon deep links so that tapping any price tier button searches for
+that exact product on Amazon, not a generic term [1]. For example, if
+the gift is a pickleball paddle, the search term should be
+'pickleball+paddle' not just 'gift' [1]."
+
+
+═══════════════════════════════════════════════════════════════
+NOTES ON PROMPT ENGINEERING DECISIONS
+═══════════════════════════════════════════════════════════════
+
+1. PERSONA GUARDRAILS
+   The detective theme is enforced through negative constraints
+   ("never use generic assistant phrases") combined with positive
+   examples ("say 'Analyzing evidence...' not 'Processing...'").
+   This pattern prevents model drift across multi-turn loops.
+
+2. STRUCTURED OUTPUT ENFORCEMENT
+   "Exactly 3 cards, never fewer" is a hard output constraint.
+   Vague instructions like "show some recommendations" caused
+   the model to collapse outputs. Specificity is critical.
+
+3. AMAZON URL STRUCTURE
+   Amazon's native p_36 price filter parameter:
+   - 0-3000   = Under $30  (values in cents)
+   - 3000-7500 = $30–$75
+   - 7500-    = $75 and above
+   No API key required — these are public search URLs.
+
+4. LINK BEHAVIOR IN SEKAI SANDBOX
+   Sekai's sandboxed environment blocks window.open() and
+   JavaScript-driven navigation in some configurations.
+   Plain <a href="..."> tags with target="_blank" are the
+   most reliable fallback for outbound links.
+
+5. DYNAMIC KEYWORD INJECTION
+   Gift name must be extracted from the LLM output and
+   URL-encoded (spaces → +) before being appended to the
+   Amazon search URL. This is the bridge between
+   conversational discovery and e-commerce fulfillment.
+
+
+═══════════════════════════════════════════════════════════════
+FUTURE PROMPTS (Phase 2 — Not Yet Implemented)
+═══════════════════════════════════════════════════════════════
+
+PLANNED — ETSY LINKS FOR UNIQUE/HANDMADE GIFTS:
+"For gift recommendations tagged as 'unique' or 'handmade', add a
+fourth button labeled '🎨 Find on Etsy' that opens
+https://www.etsy.com/search?q=[gift+name] in the browser [1]. Display
+this button below the 3 Amazon price-tier buttons [1]."
+
+PLANNED — LOADING / EVIDENCE ANALYSIS ANIMATION:
+"Between the interview completion and the results screen, display a
+2-second animated loading screen with the text 'Analyzing evidence...'
+and a spinning magnifying glass emoji [1]. Then transition to the gift
+cards [1]."
+
+PLANNED — RECIPIENT NAME PERSONALIZATION:
+"At the start of the interview, ask the user for the recipient's first
+name [1]. Use that name throughout the conversation (e.g., 'Based on
+what you told me about Sarah...') and display it on the results screen
+header [1]."
